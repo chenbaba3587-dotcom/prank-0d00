@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>紧急通知</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+background: #0a0a0a;
+font-family: system-ui, sans-serif;
+min-height: 100vh;
+display: flex;
+flex-direction: column;
+align-items: center;
+justify-content: center;
+overflow: hidden;
+color: #fff;
+}
+.bait-screen {
+text-align: center;
+display: flex;
+flex-direction: column;
+align-items: center;
+gap: 20px;
+}
+.bait-title {
+font-size: 22px;
+color: #ff4757;
+font-weight: 700;
+letter-spacing: 1px;
+}
+.bait-subtitle {
+font-size: 15px;
+color: #aaa;
+max-width: 320px;
+line-height: 1.6;
+}
+.envelope {
+width: 120px;
+height: 90px;
+background: #e74c3c;
+border-radius: 4px;
+position: relative;
+margin: 10px auto;
+cursor: pointer;
+}
+.envelope::before {
+content: '';
+position: absolute;
+top: 0; left: 0;
+width: 0; height: 0;
+border-left: 60px solid transparent;
+border-right: 60px solid transparent;
+border-top: 50px solid #c0392b;
+}
+.envelope::after {
+content: '💌';
+position: absolute;
+bottom: 10px;
+left: 50%;
+transform: translateX(-50%);
+font-size: 28px;
+}
+#trigger { display: none; }
+#trigger2 { display: none; }
+#trigger3 { display: none; }
+.click-label {
+cursor: pointer;
+display: inline-block;
+background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+color: #fff;
+padding: 14px 40px;
+border-radius: 50px;
+font-size: 16px;
+font-weight: 600;
+letter-spacing: 1px;
+transition: transform 0.15s ease, box-shadow 0.15s ease;
+box-shadow: 0 4px 15px rgba(238, 90, 36, 0.4);
+}
+.click-label:hover {
+transform: scale(1.05);
+box-shadow: 0 6px 25px rgba(238, 90, 36, 0.6);
+}
+.loading-screen {
+display: none;
+text-align: center;
+flex-direction: column;
+align-items: center;
+gap: 16px;
+position: absolute;
+top: 50%;
+left: 50%;
+transform: translate(-50%, -50%);
+}
+.spinner {
+width: 50px;
+height: 50px;
+border: 4px solid #333;
+border-top: 4px solid #ff6b6b;
+border-radius: 50%;
+animation: spin 1s linear infinite;
+}
+@keyframes spin {
+to { transform: rotate(360deg); }
+}
+.loading-text {
+font-size: 14px;
+color: #888;
+}
+.progress-bar {
+width: 240px;
+height: 6px;
+background: #222;
+border-radius: 3px;
+overflow: hidden;
+}
+.progress-fill {
+height: 100%;
+background: linear-gradient(90deg, #ff6b6b, #ee5a24);
+width: 0%;
+border-radius: 3px;
+animation: fillBar 3s ease-in-out forwards;
+}
+@keyframes fillBar {
+0% { width: 0%; }
+60% { width: 75%; }
+85% { width: 92%; }
+100% { width: 100%; }
+}
+.continue-label {
+cursor: pointer;
+display: inline-block;
+background: #ff6b6b;
+color: #fff;
+padding: 10px 30px;
+border-radius: 50px;
+font-size: 14px;
+font-weight: 600;
+opacity: 0;
+animation: fadeInBtn 0.5s ease-out 3.2s both;
+}
+@keyframes fadeInBtn {
+from { opacity: 0; transform: translateY(10px); }
+to { opacity: 1; transform: none; }
+}
+.prank-screen {
+display: none;
+text-align: center;
+flex-direction: column;
+align-items: center;
+gap: 20px;
+position: absolute;
+top: 50%;
+left: 50%;
+transform: translate(-50%, -50%);
+width: 90%;
+max-width: 500px;
+}
+.prank-emoji {
+font-size: 80px;
+animation: bounceIn 0.6s ease-out;
+}
+@keyframes bounceIn {
+0% { transform: scale(0); }
+60% { transform: scale(1.3); }
+100% { transform: scale(1); }
+}
+.prank-title {
+font-size: 28px;
+font-weight: 800;
+background: linear-gradient(135deg, #ff6b6b, #feca57, #48dbfb, #ff9ff3);
+-webkit-background-clip: text;
+-webkit-text-fill-color: transparent;
+background-clip: text;
+}
+.prank-message {
+font-size: 18px;
+color: #ddd;
+line-height: 1.8;
+padding: 20px;
+background: rgba(255,255,255,0.05);
+border-radius: 16px;
+border: 1px solid rgba(255,255,255,0.1);
+}
+.prank-message .name {
+color: #ff6b6b;
+font-weight: 700;
+font-size: 22px;
+}
+.prank-footer {
+font-size: 13px;
+color: #555;
+margin-top: 10px;
+}
+.roast-list {
+text-align: left;
+font-size: 15px;
+color: #ccc;
+line-height: 2;
+padding: 16px 24px;
+background: rgba(255,107,107,0.08);
+border-radius: 12px;
+border-left: 3px solid #ff6b6b;
+}
+.final-label {
+cursor: pointer;
+display: inline-block;
+background: linear-gradient(135deg, #a29bfe, #6c5ce7);
+color: #fff;
+padding: 12px 36px;
+border-radius: 50px;
+font-size: 14px;
+font-weight: 600;
+transition: transform 0.15s ease;
+}
+.final-label:hover {
+transform: scale(1.05);
+}
+.final-screen {
+display: none;
+text-align: center;
+flex-direction: column;
+align-items: center;
+gap: 20px;
+position: absolute;
+top: 50%;
+left: 50%;
+transform: translate(-50%, -50%);
+width: 90%;
+max-width: 500px;
+}
+.final-emoji { font-size: 60px; }
+.final-text {
+font-size: 20px;
+color: #feca57;
+font-weight: 700;
+}
+.final-sub {
+font-size: 14px;
+color: #888;
+line-height: 1.8;
+}
+#trigger:checked ~ .bait-screen { display: none; }
+#trigger:checked ~ .loading-screen { display: flex; }
+#trigger2:checked ~ .loading-screen { display: none; }
+#trigger2:checked ~ .prank-screen { display: flex; }
+#trigger3:checked ~ .prank-screen { display: none; }
+#trigger3:checked ~ .final-screen { display: flex; }
+.bg-particles {
+position: fixed;
+top: 0; left: 0;
+width: 100%; height: 100%;
+pointer-events: none;
+z-index: -1;
+}
+.particle {
+position: absolute;
+width: 4px;
+height: 4px;
+background: rgba(255,107,107,0.3);
+border-radius: 50%;
+animation: float 6s ease-in-out infinite;
+}
+@keyframes float {
+0%, 100% { transform: translateY(0); opacity: 0.3; }
+50% { transform: translateY(-30px); opacity: 0.8; }
+}
+.particle:nth-child(1) { top: 20%; left: 10%; animation-delay: 0s; }
+.particle:nth-child(2) { top: 60%; left: 80%; animation-delay: 1s; }
+.particle:nth-child(3) { top: 40%; left: 50%; animation-delay: 2s; }
+.particle:nth-child(4) { top: 80%; left: 30%; animation-delay: 3s; }
+.particle:nth-child(5) { top: 10%; left: 70%; animation-delay: 4s; }
+.particle:nth-child(6) { top: 70%; left: 20%; animation-delay: 0.5s; }
+.particle:nth-child(7) { top: 30%; left: 90%; animation-delay: 1.5s; }
+.particle:nth-child(8) { top: 90%; left: 60%; animation-delay: 2.5s; }
+</style>
+</head>
+<body>
+<div class="bg-particles">
+<div class="particle"></div>
+<div class="particle"></div>
+<div class="particle"></div>
+<div class="particle"></div>
+<div class="particle"></div>
+<div class="particle"></div>
+<div class="particle"></div>
+<div class="particle"></div>
+</div>
+<input type="checkbox" id="trigger">
+<input type="checkbox" id="trigger2">
+<input type="checkbox" id="trigger3">
+<div class="bait-screen">
+<div class="bait-title">⚠️ 紧急通知 ⚠️</div>
+<div class="envelope"></div>
+<div class="bait-subtitle">
+系统检测到一条来自 <strong style="color:#ff6b6b">陈志颖</strong> 的加密消息<br>
+该消息将在 <strong style="color:#feca57">24小时后</strong> 自动销毁
+</div>
+<label class="click-label" for="trigger">🔓 立即解密查看</label>
+<div style="font-size:11px; color:#444; margin-top:8px;">已有 2,847 人查看了此消息</div>
+</div>
+<div class="loading-screen">
+<div class="spinner"></div>
+<div class="loading-text">正在解密陈志颖的秘密档案...</div>
+<div class="progress-bar"><div class="progress-fill"></div></div>
+<div class="loading-text" style="font-size:12px; color:#555;">正在连接CIA数据库... 请勿关闭页面</div>
+<label class="continue-label" for="trigger2">✅ 解密完成，点击查看</label>
+</div>
+<div class="prank-screen">
+<div class="prank-emoji">🤡</div>
+<div class="prank-title">恭喜你上当了！</div>
+<div class="prank-message">
+<span class="name">陈志颖</span> 的秘密档案已解锁：
+</div>
+<div class="roast-list">
+🔍 智商检测结果：<strong style="color:#ff6b6b">余额不足</strong><br>
+📊 颜值评分：正在加载中...（加载失败）<br>
+💰 银行卡余额：<strong style="color:#feca57">¥0.00</strong>（已确认）<br>
+💘 脱单概率：<strong style="color:#ff6b6b">ERROR 404 Not Found</strong><br>
+🧠 脑容量：<strong>128MB</strong>（建议升级）<br>
+🏃 运动天赋：<strong style="color:#48dbfb">躺平冠军</strong>
+</div>
+<label class="final-label" for="trigger3">😤 我不服！再测一次</label>
+<div class="prank-footer">* 本页面纯属恶搞，如有雷同纯属巧合 😏</div>
+</div>
+<div class="final-screen">
+<div class="final-emoji">💀😂💀</div>
+<div class="final-text">你又上当了！！！</div>
+<div class="final-sub">
+陈志颖同学，你已经被骗了 <strong style="color:#ff6b6b">两次</strong> 了<br><br>
+🏆 恭喜获得称号：<strong style="color:#feca57">「年度最佳上当王」</strong><br><br>
+请将此页面转发给下一个受害者 🫡<br>
+<span style="font-size:12px; color:#444;">（转发成功可解除诅咒）</span>
+</div>
+</div>
+</body>
+</html>
